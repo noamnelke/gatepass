@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="he">
+
+<head>
+    <title>הרשמה</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+    <script type="text/javascript">
+        async function register() {
+            const options = {{ options | safe }};
+            options.challenge = Uint8Array.from(atob(options.challenge.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
+            options.user.id = Uint8Array.from(atob(options.user.id.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
+            const credential = await navigator.credentials.create({ publicKey: options });
+            const credentialData = {
+                id: credential.id,
+                rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+                response: {
+                    attestationObject: btoa(String.fromCharCode(...new Uint8Array(credential.response.attestationObject))),
+                    clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(credential.response.clientDataJSON))),
+                },
+                type: credential.type
+            };
+            const registrationRequest = {
+                credential: credentialData,
+                building: document.querySelector('input[name="building"]:checked').value,
+                apartment: document.querySelector('input[name="apartment"]').value,
+                name: document.querySelector('input[name="name"]').value
+            }
+            const res = await fetch('/verify-registration', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(registrationRequest)
+            });
+            if (res.ok) {
+                window.location.href = '/reg_success/' + (await res.json())['user_id'];
+            } else {
+                alert('Registration failed.');
+            }
+        }
+    </script>
+</head>
+
+<body dir="rtl">
+    <div class="container">
+        <h1>הרשמה</h1>
+        <form>
+            <input type="radio" id="building3" name="building" value="3" checked><label for="building3">בניין 3</label>
+            <input type="radio" id="building5" name="building" value="5"><label for="building5">בניין 5</label>
+            <br><br>
+            <label for="apartment">מספר דירה:</label>
+            <input type="text" id="apartment" name="apartment" required>
+            <br><br>
+            <label for="name">שם (רשות):</label>
+            <input type="text" id="name" name="name">
+            <br><br>
+            <button type="button" onclick="register()">הגש</button>
+        </form>
+    </div>
+</body>
+
+</html>

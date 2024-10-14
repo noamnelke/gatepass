@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <title>Update user</title>
+    <script>
+        async function UpdateUser() {
+            const user_id = document.getElementById('user_id').value;
+            const building = document.getElementById('building').value;
+            const apartment = document.getElementById('apartment').value;
+            const name = document.getElementById('name').value;
+            const validated = document.getElementById('validated').checked;
+            const admin = document.getElementById('admin').checked;
+
+            const updateRequest = {
+                id: user_id,
+                building,
+                apartment,
+                name,
+                validated,
+                admin
+            };
+
+            const res = await fetch('/update_user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updateRequest)
+            });
+
+            if (res.ok) {
+                alert('User updated successfully.');
+            } else {
+                alert('User update failed.');
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Update user</h1>
+        <form id="updateForm">
+            <label for="user_id">User ID:</label>
+            <input type="text" id="user_id" name="user_id" value="{{ user.id }}" readonly><br><br>
+
+            <label for="building">Building:</label>
+            <input type="text" id="building" name="building" value="{{ user.building }}"><br><br>
+
+            <label for="apartment">Apartment:</label>
+            <input type="text" id="apartment" name="apartment" value="{{ user.apartment }}"><br><br>
+
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}"><br><br>
+
+            <label for="validated">Validated:</label>
+            <input type="checkbox" id="validated" name="validated" {{ "checked" if user.validated }}><br><br>
+
+            <label for="admin">Admin:</label>
+            <input type="checkbox" id="admin" name="admin" {{ "checked" if user.admin }}><br><br>
+
+            <button type="button" onclick="UpdateUser()">Update</button>
+        </form>
+    </div>
+</body>
+
+</html>

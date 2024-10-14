@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="he">
+
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+    <script type="text/javascript">
+        async function login() {
+            const options = {{ options | safe }};
+            console.log(options);
+            options.challenge = Uint8Array.from(atob(options.challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+            const assertion = await navigator.credentials.get({ publicKey: options });
+            const res = await fetch('/verify-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(assertion)
+            });
+            const urlParams = new URLSearchParams(window.location.search);
+            const dest = urlParams.get('next') || '/open_gate';
+            if (res.ok) {
+                window.location.href = dest;
+            } else {
+                alert('Authentication failed. Redirecting to registration.');
+                window.location.href = '/register';
+            }
+        }
+        window.onload = login;
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Login</h1>
+    </div>
+</body>
+
+</html>

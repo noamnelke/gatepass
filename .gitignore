@@ -1,0 +1,13 @@
+# Environment variables
+.env
+
+# Python specific
+*.pyc
+__pycache__/
+venv/
+
+# Flask specific
+*.db
+
+# Certificates
+*.pem

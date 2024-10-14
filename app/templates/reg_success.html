@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="he">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ממתין לאישור</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <style>
+        h1 {
+            color: #4CAF50;
+        }
+        p#next_step {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body dir="rtl">
+    <div class="container">
+        <h1>ממתין לאישור</h1>
+        <p>ההרשמה בוצעה בהצלחה. מספר המשתמש שלך הוא:</p>
+        <p><strong>{{ user_id }}</strong></p>
+        <p id="next_step">על מנת לאמת את המשתמש שלך, עליך לשלוח הודעה לנועם ע״י לחיצה על <a>הקישור הזה</a>.</p>
+    </div>
+    <script>
+        const baseUrl = 'https://wa.me/972523502345?text=';
+        const message = 'הי, נועם. נרשמתי לשירות פתיחת השער ומספר המשתמש שלי הוא {{ user_id }}. תוכל לאשר אותו בבקשה? תודה!\n\n{{ origin }}/update/{{ user_id }}';
+        const urlEncodedMessage = encodeURIComponent(message);
+        const fullUrl = baseUrl + urlEncodedMessage;
+        document.querySelector('a').href = fullUrl;
+    </script>
+</body>
+</html>
