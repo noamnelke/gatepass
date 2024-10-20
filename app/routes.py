@@ -50,6 +50,7 @@ def verify_login():
     logging.info("Verifying login.")
     try:
         credential = request.get_json()
+        logging.info(f"Received credential: {credential}")
         stored_challenge = session.pop("current_authentication_challenge", None)
         if not stored_challenge:
             logging.error("No stored challenge found in session.")

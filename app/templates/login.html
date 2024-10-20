@@ -11,14 +11,15 @@
             console.log(options);
             options.challenge = Uint8Array.from(atob(options.challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
             const assertion = await navigator.credentials.get({ publicKey: options });
+            console.log(assertion);
             const res = await fetch('/verify-login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(assertion)
             });
-            const urlParams = new URLSearchParams(window.location.search);
-            const dest = urlParams.get('next') || '/open_gate';
             if (res.ok) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const dest = urlParams.get('next') || '/open_gate';
                 window.location.href = dest;
             } else {
                 alert('Authentication failed. Redirecting to registration.');
