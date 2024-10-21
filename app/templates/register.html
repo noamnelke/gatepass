@@ -11,14 +11,12 @@
     <script type="text/javascript">
         const { startRegistration } = SimpleWebAuthnBrowser;
 
-        async function register() {
+        async function register(formData) {
             const options = {{ options | safe }};
             const credential = await startRegistration({ optionsJSON: options });
             const registrationRequest = {
                 credential: credential,
-                building: document.querySelector('input[name="building"]:checked').value,
-                apartment: document.querySelector('input[name="apartment"]').value,
-                name: document.querySelector('input[name="name"]').value
+                ...formData,
             }
             const res = await fetch('/verify-registration', {
                 method: 'POST',
@@ -37,19 +35,25 @@
 <body dir="rtl">
     <div class="container">
         <h1>הרשמה</h1>
-        <form>
+        <form id="registration">
             <input type="radio" id="building3" name="building" value="3" checked><label for="building3">בניין 3</label>
             <input type="radio" id="building5" name="building" value="5"><label for="building5">בניין 5</label>
             <br><br>
             <label for="apartment">מספר דירה:</label>
-            <input type="text" id="apartment" name="apartment" required>
+            <input type="text" id="apartment" name="apartment" autocomplete="address-line2 address-line3" required>
             <br><br>
             <label for="name">שם (רשות):</label>
-            <input type="text" id="name" name="name">
+            <input type="text" id="name" name="name" autocomplete="name given-name nickname username">
             <br><br>
-            <button type="button" onclick="register()">הגש</button>
+            <button type="submit">הגש</button>
         </form>
     </div>
+    <script>
+        document.getElementById('registration').addEventListener('submit', (event) => {
+            event.preventDefault();
+            register(Object.fromEntries(new FormData(event.target)));
+        });
+    </script>
 </body>
 
 </html>
