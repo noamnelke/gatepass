@@ -2,6 +2,8 @@
 <html lang="he">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>הרשמה</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 
@@ -36,16 +38,24 @@
     <div class="container">
         <h1>הרשמה</h1>
         <form id="registration">
-            <input type="radio" id="building3" name="building" value="3" checked><label for="building3">בניין 3</label>
-            <input type="radio" id="building5" name="building" value="5"><label for="building5">בניין 5</label>
-            <br><br>
-            <label for="apartment">מספר דירה:</label>
-            <input type="text" id="apartment" name="apartment" autocomplete="address-line2 address-line3" required>
-            <br><br>
-            <label for="name">שם (רשות):</label>
-            <input type="text" id="name" name="name" autocomplete="name given-name nickname username">
-            <br><br>
-            <button type="submit">הגש</button>
+            <div class="radio-group">
+                <input type="radio" id="building3" name="building" value="3" checked>
+                <label for="building3">בניין 3</label>
+
+                <input type="radio" id="building5" name="building" value="5">
+                <label for="building5">בניין 5</label>
+            </div>
+            <div>
+                <label for="apartment">מספר דירה:</label>
+                <input type="text" id="apartment" name="apartment" autocomplete="address-line2 address-line3" required>
+            </div>
+            <div>
+                <label for="name">שם (רשות):</label>
+                <input type="text" id="name" name="name" autocomplete="name given-name nickname username">
+            </div>
+            <div>
+                <button type="submit">הגש</button>
+            </div>
         </form>
     </div>
     <script>
