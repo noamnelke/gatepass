@@ -27,6 +27,7 @@ form input[type="text"] {
     width: 50%;
     padding: 10px;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 form button {
@@ -62,6 +63,10 @@ form button {
     background-color: #007bff;
     color: white;
     border-color: #007bff;
+}
+
+input, select, textarea {
+    font-size: 16px;  /* Ensures the text size is large enough to prevent zoom */
 }
 
 /* Media query for mobile devices */
