@@ -5,13 +5,15 @@
     <title>Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 
+    <script src="https://unpkg.com/@simplewebauthn/browser@11.0.0/dist/bundle/index.umd.min.js"
+        integrity="sha384-MEoU+35r/Mcpi7hzGCSKXkm+Yu7nRyDqV8z+GjTNBhxzV/JrQXe88JTG1ol0+F1e"
+        crossorigin="anonymous"></script>
     <script type="text/javascript">
+        const { startAuthentication } = SimpleWebAuthnBrowser;
+
         async function login() {
             const options = {{ options | safe }};
-            console.log(options);
-            options.challenge = Uint8Array.from(atob(options.challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
-            const assertion = await navigator.credentials.get({ publicKey: options });
-            console.log(assertion);
+            const assertion = await startAuthentication({ optionsJSON: options });
             const res = await fetch('/verify-login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

@@ -5,23 +5,17 @@
     <title>הרשמה</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 
+    <script src="https://unpkg.com/@simplewebauthn/browser@11.0.0/dist/bundle/index.umd.min.js"
+        integrity="sha384-MEoU+35r/Mcpi7hzGCSKXkm+Yu7nRyDqV8z+GjTNBhxzV/JrQXe88JTG1ol0+F1e"
+        crossorigin="anonymous"></script>
     <script type="text/javascript">
+        const { startRegistration } = SimpleWebAuthnBrowser;
+
         async function register() {
             const options = {{ options | safe }};
-            options.challenge = Uint8Array.from(atob(options.challenge.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
-            options.user.id = Uint8Array.from(atob(options.user.id.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
-            const credential = await navigator.credentials.create({ publicKey: options });
-            const credentialData = {
-                id: credential.id,
-                rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
-                response: {
-                    attestationObject: btoa(String.fromCharCode(...new Uint8Array(credential.response.attestationObject))),
-                    clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(credential.response.clientDataJSON))),
-                },
-                type: credential.type
-            };
+            const credential = await startRegistration({ optionsJSON: options });
             const registrationRequest = {
-                credential: credentialData,
+                credential: credential,
                 building: document.querySelector('input[name="building"]:checked').value,
                 apartment: document.querySelector('input[name="apartment"]').value,
                 name: document.querySelector('input[name="name"]').value
