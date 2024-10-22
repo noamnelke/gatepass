@@ -24,6 +24,32 @@ from config import Config
 bp = Blueprint("main", __name__)
 
 
+@bp.route("/")
+def index():
+    logging.info("Accessed / page.")
+    return render_template("index.html")
+
+
+@bp.route("/open", methods=["POST"])
+def open():
+    logging.info("Accessed /open page.")
+    if "validated" not in session:
+        ret = {
+            "error": "not_authenticated",
+            "options": options_to_json(generate_auth_options()),
+        }
+        return ret, 401
+    # Handle unauthorized / unverified users
+    return "OK", 200
+
+
+@bp.route("/logout")
+def logout():
+    logging.info("Logging out.")
+    session.clear()
+    return redirect(url_for("main.index"))
+
+
 @bp.route("/open_gate")
 def open_gate():
     if "user_id" not in session:
@@ -39,10 +65,13 @@ def open_gate():
 @bp.route("/login")
 def login():
     logging.info("Initiating login process.")
-    # Generate authentication options
+    options = generate_auth_options()
+    return render_template("login.html", options=options_to_json(options))
+
+def generate_auth_options():
     options = generate_authentication_options(rp_id=Config.RP_ID)
     session["current_authentication_challenge"] = options.challenge
-    return render_template("login.html", options=options_to_json(options))
+    return options
 
 
 @bp.route("/verify-login", methods=["POST"])
@@ -155,7 +184,7 @@ def update(user_id):
     logging.info(f"Update user {user_id}.")
     user = db.get_user(user_id)
     return render_template("update.html", user=user)
- 
+
 
 @bp.route("/update_user", methods=["POST"])
 def update_user():

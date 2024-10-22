@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="he">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>נחל סער | חניון תחתי</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-48x48.png') }}" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}" />
+    <meta name="apple-mobile-web-app-title" content="GatePass" />
+    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}" />
+
+    <script src="https://unpkg.com/@simplewebauthn/browser@11.0.0/dist/bundle/index.umd.min.js"
+        integrity="sha384-MEoU+35r/Mcpi7hzGCSKXkm+Yu7nRyDqV8z+GjTNBhxzV/JrQXe88JTG1ol0+F1e"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        const { startAuthentication } = SimpleWebAuthnBrowser;
+
+        async function login(optionsJSON) {
+            const assertion = await startAuthentication({ optionsJSON });
+            const res = await fetch('/verify-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(assertion)
+            });
+            if (res.ok) {
+                open();
+            } else {
+                alert('Authentication failed. Please register first.');
+                window.location.href = '/register';
+            }
+        }
+
+        async function open() {
+            const res = await fetch('/open', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gate_id: 1 })
+            });
+            if (res.ok) {
+                alert('Gate opened successfully.');
+            } else {
+                const responseData = await res.json();
+                if (responseData.error === 'not_authenticated') {
+                    const { options } = responseData;
+                    login(JSON.parse(options));
+                } else {
+                    {# TODO: Handle unverified / unauthorized user #}
+                    console.error(responseData);
+                    alert('Failed to open gate.');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', event => {
+            document.querySelector('.main_button').addEventListener('click', event => {
+                event.preventDefault();
+                open();
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>נחל סער, קריית אונו</h1>
+        <h2>חניון תחתי</h2>
+        <div>
+            <button class="main-button">פתח שער</button>
+        </div>
+        <div>
+            <img class="logo" src="{{ url_for('static', filename='images/gatepass-logo-no-text.svg') }}" alt="GatePass Logo">
+        </div>
+    </div>
+</body>
+
+</html>

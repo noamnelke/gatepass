@@ -69,6 +69,23 @@ input, select, textarea {
     font-size: 16px;  /* Ensures the text size is large enough to prevent zoom */
 }
 
+button.main-button {
+    margin-top: 40px;
+    padding: 20px 40px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+img.logo {
+    width: 100%;
+    max-width: 360px;
+    margin-top: 50px;
+}
+
 /* Media query for mobile devices */
 @media (max-width: 600px) {
     body {
@@ -94,5 +111,9 @@ input, select, textarea {
     form button {
         width: 100%;
         padding: 20px;
+    }
+
+    button.main-button {
+        width: 100%;
     }
 }
