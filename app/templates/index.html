@@ -1,19 +1,12 @@
-<!DOCTYPE html>
-<html lang="he">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>נחל סער | חניון תחתי</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+{% block title %}נחל סער | חניון תחתי{% endblock %}
+{% block heading %}נחל סער, קריית אונו{% endblock %}
+{% block subheading %}חניון תחתי{% endblock %}
+{% block bodytags %}dir="rtl"{% endblock %}
 
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-48x48.png') }}" sizes="48x48" />
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon/favicon.svg') }}" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}" />
-    <meta name="apple-mobile-web-app-title" content="GatePass" />
-    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}" />
-
+{% block head %}
+    {{ super() }}
     <script src="https://unpkg.com/@simplewebauthn/browser@11.0.0/dist/bundle/index.umd.min.js"
         integrity="sha384-MEoU+35r/Mcpi7hzGCSKXkm+Yu7nRyDqV8z+GjTNBhxzV/JrQXe88JTG1ol0+F1e"
         crossorigin="anonymous"></script>
@@ -88,19 +81,13 @@
             });
         });
     </script>
-</head>
+{% endblock %}
 
-<body dir="rtl">
-    <div class="container">
-        <h1>נחל סער, קריית אונו</h1>
-        <h2>חניון תחתי</h2>
+{% block content %}
         <div>
             <button class="main-button">פתח שער</button>
         </div>
         <div>
             <img class="logo" src="{{ url_for('static', filename='images/gatepass-logo-no-text.svg') }}" alt="GatePass Logo">
         </div>
-    </div>
-</body>
-
-</html>
+{% endblock %}

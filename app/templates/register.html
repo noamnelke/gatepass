@@ -1,19 +1,11 @@
-<!DOCTYPE html>
-<html lang="he">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>הרשמה</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+{% block title %}הרשמה{% endblock %}
+{% block heading %}הרשמה{% endblock %}
+{% block bodytags %}dir="rtl"{% endblock %}
 
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-48x48.png') }}" sizes="48x48" />
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon/favicon.svg') }}" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}" />
-    <meta name="apple-mobile-web-app-title" content="GatePass" />
-    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}" />
-
+{% block head %}
+    {{ super() }}
     <script src="https://unpkg.com/@simplewebauthn/browser@11.0.0/dist/bundle/index.umd.min.js"
         integrity="sha384-MEoU+35r/Mcpi7hzGCSKXkm+Yu7nRyDqV8z+GjTNBhxzV/JrQXe88JTG1ol0+F1e"
         crossorigin="anonymous"></script>
@@ -38,12 +30,16 @@
                 alert('Registration failed.');
             }
         }
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('registration').addEventListener('submit', (event) => {
+                event.preventDefault();
+                register(Object.fromEntries(new FormData(event.target)));
+            });
+        });
     </script>
-</head>
+{% endblock %}
 
-<body dir="rtl">
-    <div class="container">
-        <h1>הרשמה</h1>
+{% block content %}
         <form id="registration">
             <div class="radio-group">
                 <input type="radio" id="building3" name="building" value="3" checked>
@@ -65,12 +61,4 @@
             </div>
         </form>
     </div>
-    <script>
-        document.getElementById('registration').addEventListener('submit', (event) => {
-            event.preventDefault();
-            register(Object.fromEntries(new FormData(event.target)));
-        });
-    </script>
-</body>
-
-</html>
+{% endblock %}

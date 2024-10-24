@@ -1,19 +1,10 @@
-<!DOCTYPE html>
-<html lang="he">
+{% extends "base.html" %}
+{% block title %}ממתין לאישור{% endblock %}
+{% block heading %}ממתין לאישור{% endblock %}
+{% block bodytags %}dir="rtl"{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ממתין לאישור</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-48x48.png') }}" sizes="48x48" />
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon/favicon.svg') }}" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}" />
-    <meta name="apple-mobile-web-app-title" content="GatePass" />
-    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}" />
-
+{% block head %}
+    {{ super() }}
     <style>
         h1 {
             color: #4CAF50;
@@ -23,20 +14,19 @@
             font-weight: bold;
         }
     </style>
-</head>
-<body dir="rtl">
-    <div class="container">
-        <h1>ממתין לאישור</h1>
-        <p>ההרשמה בוצעה בהצלחה. מספר המשתמש שלך הוא:</p>
-        <p><strong>{{ user_id }}</strong></p>
-        <p id="next_step">על מנת לאמת את המשתמש שלך, עליך לשלוח הודעה לנועם ע״י לחיצה על <a>הקישור הזה</a>.</p>
-    </div>
     <script>
         const baseUrl = 'https://wa.me/972523502345?text=';
         const message = 'הי, נועם. נרשמתי לשירות פתיחת השער ומספר המשתמש שלי הוא {{ user_id }}. תוכל לאשר אותו בבקשה? תודה!\n\n{{ origin }}/update/{{ user_id }}';
         const urlEncodedMessage = encodeURIComponent(message);
         const fullUrl = baseUrl + urlEncodedMessage;
-        document.querySelector('a').href = fullUrl;
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelector('a').href = fullUrl;
+        });
     </script>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+        <p>ההרשמה בוצעה בהצלחה. מספר המשתמש שלך הוא:</p>
+        <p><strong>{{ user_id }}</strong></p>
+        <p id="next_step">על מנת לאמת את המשתמש שלך, עליך לשלוח הודעה לנועם ע״י לחיצה על <a>הקישור הזה</a>.</p>
+{% endblock %}
