@@ -71,8 +71,8 @@ def update_user(user):
             user["building"],
             user["apartment"],
             user["name"],
-            user["validated"],
-            user["admin"],
+            "validated" in user,
+            "admin" in user,
             user["id"],
         ),
     )

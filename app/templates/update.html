@@ -16,21 +16,7 @@
 
     <script>
         async function UpdateUser() {
-            const user_id = document.getElementById('user_id').value;
-            const building = document.getElementById('building').value;
-            const apartment = document.getElementById('apartment').value;
-            const name = document.getElementById('name').value;
-            const validated = document.getElementById('validated').checked;
-            const admin = document.getElementById('admin').checked;
-
-            const updateRequest = {
-                id: user_id,
-                building,
-                apartment,
-                name,
-                validated,
-                admin
-            };
+            const updateRequest = Object.fromEntries(new FormData(document.getElementById('updateForm')));
 
             const res = await fetch('/update_user', {
                 method: 'POST',
@@ -55,7 +41,7 @@
         <form id="updateForm">
             <div>
                 <label for="user_id">User ID</label>
-                <input type="text" id="user_id" name="user_id" value="{{ user.id }}" readonly>
+                <input type="text" id="user_id" name="id" value="{{ user.id }}" readonly>
             </div>
             <div>
                 <label for="building">Building</label>

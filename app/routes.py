@@ -50,23 +50,12 @@ def logout():
     return redirect(url_for("main.index"))
 
 
-@bp.route("/open_gate")
-def open_gate():
-    if "user_id" not in session:
-        return redirect(url_for("main.login", next=url_for("main.open_gate")))
-    
-    if "validated" not in session:
-        return redirect(url_for("main.reg_success", user_id=session["user_id"]))
-    
-    logging.info("Accessed /open_gate page.")
-    
-    return render_template("open_gate.html")
-
-@bp.route("/login")
 def login():
     logging.info("Initiating login process.")
     options = generate_auth_options()
-    return render_template("login.html", options=options_to_json(options))
+    id = session.get("user_id")
+    return render_template("login.html", options=options_to_json(options), id=id)
+
 
 def generate_auth_options():
     options = generate_authentication_options(rp_id=Config.RP_ID)
@@ -175,11 +164,8 @@ def reg_success(user_id):
 
 @bp.route("/update/<int:user_id>")
 def update(user_id):
-    if "user_id" not in session:
-        return redirect(url_for("main.login", next=url_for("main.update", user_id=user_id)))
-
     if "is_admin" not in session:
-        return render_template("forbidden.html")
+        return login()
 
     logging.info(f"Update user {user_id}.")
     user = db.get_user(user_id)

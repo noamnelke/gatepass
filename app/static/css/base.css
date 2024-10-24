@@ -13,6 +13,10 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+p.warning {
+    color: red;
+}
+
 form div {
     margin-bottom: 15px;
 }

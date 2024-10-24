@@ -21,29 +21,39 @@
         const { startAuthentication } = SimpleWebAuthnBrowser;
 
         async function login() {
+            btn = document.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = 'Authenticating...';
+            
             const options = {{ options | safe }};
             const assertion = await startAuthentication({ optionsJSON: options });
-            const res = await fetch('/verify-login', {
+            await fetch('/verify-login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(assertion)
             });
-            if (res.ok) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const dest = urlParams.get('next') || '/open_gate';
-                window.location.href = dest;
-            } else {
-                alert('Authentication failed. Redirecting to registration.');
-                window.location.href = '/register';
-            }
+            location.reload();
         }
-        window.onload = login;
     </script>
 </head>
 
 <body>
     <div class="container">
-        <h1>Login</h1>
+        <h1>Update User</h1>
+        {% if id %}
+        <p class="warning">
+            User {{ id }} is not an administrator.
+        </p>
+        {% endif %}
+        <p>
+            Please authenticate with an administrator account to continue.
+        </p>
+        <div>
+            <button class="main-button" onclick="login()">Login</button>
+        </div>
+        <div>
+            <img class="logo" src="{{ url_for('static', filename='images/gatepass-logo-no-text.svg') }}" alt="GatePass Logo">
+        </div>
     </div>
 </body>
 
