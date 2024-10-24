@@ -73,6 +73,11 @@ input, select, textarea {
     font-size: 16px;  /* Ensures the text size is large enough to prevent zoom */
 }
 
+div.horizontal-block {
+    display: inline-block;
+    margin: 0 20px;
+}
+
 button.main-button {
     margin-top: 40px;
     padding: 20px;

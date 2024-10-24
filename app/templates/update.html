@@ -16,6 +16,9 @@
 
     <script>
         async function UpdateUser() {
+            const btn = document.querySelector('button');
+            btn.disabled = true;
+
             const updateRequest = Object.fromEntries(new FormData(document.getElementById('updateForm')));
 
             const res = await fetch('/update_user', {
@@ -31,6 +34,7 @@
             } else {
                 alert('User update failed.');
             }
+            btn.disabled = false;
         }
     </script>
 </head>
@@ -56,15 +60,17 @@
                 <input type="text" id="name" name="name" value="{{ user.name }}">
             </div>
             <div>
-                <input type="checkbox" id="validated" name="validated" {{ "checked" if user.validated }}>
-                <label for="validated">Validated</label>
+                <div class="horizontal-block">
+                    <input type="checkbox" id="validated" name="validated" {{ "checked" if user.validated }}>
+                    <label for="validated">Validated</label>
+                </div>
+                <div class="horizontal-block">
+                    <input type="checkbox" id="admin" name="admin" {{ "checked" if user.admin }}>
+                    <label for="admin">Admin</label>
+                </div>
             </div>
             <div>
-                <input type="checkbox" id="admin" name="admin" {{ "checked" if user.admin }}>
-                <label for="admin">Admin</label>
-            </div>
-            <div>
-                <button type="button" onclick="UpdateUser()">Update</button>
+                <button class="main-button" type="button" onclick="UpdateUser()">Update</button>
             </div>
         </form>
     </div>
