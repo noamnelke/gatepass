@@ -71,13 +71,53 @@ input, select, textarea {
 
 button.main-button {
     margin-top: 40px;
-    padding: 20px 40px;
+    padding: 20px;
+    min-width: 150px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+}
+
+button.main-button:disabled {
+    background-color: #aaa;
+    animation: gray-pulse 1s infinite;
+    cursor: not-allowed;
+}
+
+button.main-button.opening:disabled {
+    background-color: #42c838;
+    animation: green-pulse 1s infinite;
+}
+
+@keyframes gray-pulse {
+    0% {
+        background-color: #aaa;
+    }
+
+    50% {
+        background-color: #ccc;
+    }
+
+    100% {
+        background-color: #aaa;
+    }
+}
+
+@keyframes green-pulse {
+    0% {
+        background-color: #42c838;
+    }
+
+    30% {
+        background-color: #40a639;
+    }
+
+    100% {
+        background-color: #42c838;
+    }
 }
 
 img.logo {

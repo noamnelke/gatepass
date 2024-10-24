@@ -36,13 +36,15 @@
         }
 
         async function open() {
+            buttonValidating();
             const res = await fetch('/open', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ gate_id: 1 })
             });
             if (res.ok) {
-                alert('Gate opened successfully.');
+                buttonOpening();
+                buttonDone();
             } else {
                 const responseData = await res.json();
                 if (responseData.error === 'not_authenticated') {
@@ -51,9 +53,32 @@
                 } else {
                     {# TODO: Handle unverified / unauthorized user #}
                     console.error(responseData);
+                    buttonDone(0);
                     alert('Failed to open gate.');
                 }
             }
+        }
+
+        function buttonValidating() {
+            const button = document.querySelector('.main-button');
+            button.disabled = true;
+            button.textContent = 'מאמת...';
+        }
+
+        function buttonOpening() {
+            const button = document.querySelector('.main-button');
+            button.disabled = true;
+            button.classList.add('opening');
+            button.textContent = 'פותח...';
+        }
+
+        function buttonDone(delay = 10000) {
+            setTimeout(() => {
+                const button = document.querySelector('.main-button');
+                button.disabled = false;
+                button.classList.remove('opening');
+                button.textContent = 'פתח שער';
+            }, delay);
         }
 
         document.addEventListener('DOMContentLoaded', (event) => {
@@ -65,7 +90,7 @@
     </script>
 </head>
 
-<body>
+<body dir="rtl">
     <div class="container">
         <h1>נחל סער, קריית אונו</h1>
         <h2>חניון תחתי</h2>
