@@ -12,7 +12,7 @@
 
             const updateRequest = Object.fromEntries(new FormData(document.getElementById('updateForm')));
 
-            const res = await fetch('/update_user', {
+            const res = await fetch('/update-user', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

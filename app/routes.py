@@ -163,7 +163,7 @@ def verify_registration():
         return "Failed", 400
 
 
-@bp.route("/update_user", methods=["POST"])
+@bp.route("/update-user", methods=["POST"])
 def update_user():
     logging.info("Updating user.")
     if "is_admin" not in session:
