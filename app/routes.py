@@ -15,20 +15,61 @@ from webauthn import (
     generate_registration_options,
     verify_registration_response,
 )
-from webauthn.helpers.structs import AuthenticationCredential
 import logging
-from .models import get_db_connection
 from . import models as db
 from config import Config
 
 bp = Blueprint("main", __name__)
 
 
+# Pages
+
 @bp.route("/")
 def index():
     logging.info("Accessed / page.")
     return render_template("index.html")
 
+
+@bp.route("/register")
+def register():
+    logging.info("Initiating registration process.")
+
+    # Generate registration options
+    options = generate_registration_options(
+        rp_id=Config.RP_ID,
+        rp_name="GatePass",
+        user_name=Config.USER_ID,
+    )
+    session["current_registration_challenge"] = options.challenge
+    return render_template("register.html", options=options_to_json(options))
+
+
+@bp.route("/reg_success/<int:user_id>")
+def reg_success(user_id):
+    logging.info(f"Registration successful for user {user_id}.")
+    return render_template("reg_success.html", user_id=user_id, origin=Config.ORIGIN)
+
+
+@bp.route("/logout")
+def logout():
+    logging.info("Logging out.")
+    session.clear()
+    return redirect(url_for("main.index"))
+
+
+# Admin pages
+
+@bp.route("/update/<int:user_id>")
+def update(user_id):
+    if "is_admin" not in session:
+        return login()
+
+    logging.info(f"Update user {user_id}.")
+    user = db.get_user(user_id)
+    return render_template("update.html", user=user)
+
+
+# API endpoints
 
 @bp.route("/open", methods=["POST"])
 def open():
@@ -41,26 +82,6 @@ def open():
         return ret, 401
     # Handle unauthorized / unverified users
     return "OK", 200
-
-
-@bp.route("/logout")
-def logout():
-    logging.info("Logging out.")
-    session.clear()
-    return redirect(url_for("main.index"))
-
-
-def login():
-    logging.info("Initiating login process.")
-    options = generate_auth_options()
-    id = session.get("user_id")
-    return render_template("login.html", options=options_to_json(options), id=id)
-
-
-def generate_auth_options():
-    options = generate_authentication_options(rp_id=Config.RP_ID)
-    session["current_authentication_challenge"] = options.challenge
-    return options
 
 
 @bp.route("/verify-login", methods=["POST"])
@@ -104,20 +125,6 @@ def verify_login():
         return "Failed", 400
 
 
-@bp.route("/register")
-def register():
-    logging.info("Initiating registration process.")
-
-    # Generate registration options
-    options = generate_registration_options(
-        rp_id=Config.RP_ID,
-        rp_name="GatePass",
-        user_name=Config.USER_ID,
-    )
-    session["current_registration_challenge"] = options.challenge
-    return render_template("register.html", options=options_to_json(options))
-
-
 @bp.route("/verify-registration", methods=["POST"])
 def verify_registration():
     logging.info("Verifying registration.")
@@ -156,22 +163,6 @@ def verify_registration():
         return "Failed", 400
 
 
-@bp.route("/reg_success/<int:user_id>")
-def reg_success(user_id):
-    logging.info(f"Registration successful for user {user_id}.")
-    return render_template("reg_success.html", user_id=user_id, origin=Config.ORIGIN)
-
-
-@bp.route("/update/<int:user_id>")
-def update(user_id):
-    if "is_admin" not in session:
-        return login()
-
-    logging.info(f"Update user {user_id}.")
-    user = db.get_user(user_id)
-    return render_template("update.html", user=user)
-
-
 @bp.route("/update_user", methods=["POST"])
 def update_user():
     logging.info("Updating user.")
@@ -187,3 +178,18 @@ def update_user():
     except Exception as e:
         logging.error(f"Update failed: {e}")
         return "Failed", 400
+
+
+# Helper functions
+
+def generate_auth_options():
+    options = generate_authentication_options(rp_id=Config.RP_ID)
+    session["current_authentication_challenge"] = options.challenge
+    return options
+
+
+def login():
+    logging.info("Initiating login process.")
+    options = generate_auth_options()
+    id = session.get("user_id")
+    return render_template("login.html", options=options_to_json(options), id=id)
