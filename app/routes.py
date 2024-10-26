@@ -65,7 +65,7 @@ def logout():
 @bp.route("/update/<int:user_id>")
 def update(user_id):
     if "is_admin" not in session:
-        return login()
+        return login("Update User")
 
     logging.info(f"Update user {user_id}.")
     user = db.get_user(user_id)
@@ -75,7 +75,7 @@ def update(user_id):
 @bp.route("/generate-token")
 def generate_token_page():
     if "is_admin" not in session:
-        return login()
+        return login("Generate Token")
 
     logging.info("Accessed /generate-token page.")
     return render_template("generate_token.html")
@@ -236,11 +236,11 @@ def generate_auth_options():
     return options
 
 
-def login():
+def login(title="Login"):
     logging.info("Initiating login process.")
     options = generate_auth_options()
     id = session.get("user_id")
-    return render_template("login.html", options=options_to_json(options), id=id)
+    return render_template("login.html", title=title, id=id, options=options_to_json(options))
 
 
 def generate_token(gate_id, valid_through_hour):
