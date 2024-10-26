@@ -2,7 +2,6 @@ import datetime
 from flask import (
     Blueprint,
     render_template,
-    render_template_string,
     request,
     session,
     redirect,
@@ -35,6 +34,15 @@ def index():
 
 @bp.route("/register")
 def register():
+    token = request.args.get("token")
+    if token==None:
+        return render_template("request_token.html")
+    try:
+        reg_tokens.validate_token(token, Config.SECRET_KEY)
+    except ValueError as e:
+        logging.error(f"Token validation failed: {e}")
+        return render_template("request_token.html", error=str(e))
+
     logging.info("Initiating registration process.")
 
     # Generate registration options
@@ -45,12 +53,6 @@ def register():
     )
     session["current_registration_challenge"] = options.challenge
     return render_template("register.html", options=options_to_json(options))
-
-
-@bp.route("/reg_success/<int:user_id>")
-def reg_success(user_id):
-    logging.info(f"Registration successful for user {user_id}.")
-    return render_template("reg_success.html", user_id=user_id, origin=Config.ORIGIN)
 
 
 @bp.route("/logout")
@@ -91,7 +93,6 @@ def open():
             "options": options_to_json(generate_auth_options()),
         }
         return ret, 401
-    # Handle unauthorized / unverified users
     return "OK", 200
 
 
@@ -168,7 +169,7 @@ def verify_registration():
         logging.info(
             f"User {user_id} registered with credential ID {credential_id.hex()}."
         )
-        return {"user_id": user_id}, 200
+        return "OK", 200
     except Exception as e:
         logging.error(f"Registration failed: {e}")
         return "Failed", 400
@@ -204,8 +205,7 @@ def generate_token_endpoint():
         valid_through_str = req["valid-through"]
         valid_through_dt = datetime.datetime.strptime(valid_through_str, "%Y-%m-%dT%H:%M")
         valid_through_hour = reg_tokens.get_hour(valid_through_dt)
-        token = generate_token(gate_id, valid_through_hour)
-        full_token = reg_tokens.encode_full_token(gate_id, valid_through_hour, token)
+        full_token = reg_tokens.encode_full_token(gate_id, valid_through_hour, Config.SECRET_KEY)
         logging.info(f"Token generated. token={full_token} valid_through={valid_through_dt}")
         return full_token, 200
     except Exception as e:
@@ -241,7 +241,3 @@ def login(title="Login"):
     options = generate_auth_options()
     id = session.get("user_id")
     return render_template("login.html", title=title, id=id, options=options_to_json(options))
-
-
-def generate_token(gate_id, valid_through_hour):
-    return reg_tokens.generate_token(gate_id, valid_through_hour, Config.SECRET_KEY)

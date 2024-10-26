@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}הרשמה{% endblock %}
+{% block heading %}הרשמה{% endblock %}
+{% block bodytags %}dir="rtl"{% endblock %}
+
+{% block content %}
+        <div>
+            {% if error=="Token expired" %}
+            <p>הקוד שסופק פג תוקף.</p>
+            {% elif error=="Bad signature" %}
+            <p>הקוד שסופק לא חתום כראוי, יש לספק קוד תקין.</p>
+            {% endif %}
+            <p>יש לספק קוד רישום תקף על מנת להירשם לשירות.</p>
+        </div>
+        <form>
+            <div>
+                <label for="token">קוד רישום</label>
+                <input type="text" id="token" name="token" dir="ltr" required>
+            </div>
+            <div>
+                <button type="submit">הגש</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

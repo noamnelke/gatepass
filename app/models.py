@@ -93,7 +93,7 @@ def init_db():
                 building INTEGER NOT NULL,
                 apartment TEXT NOT NULL,
                 name TEXT,
-                validated INTEGER NOT NULL DEFAULT 0,
+                validated INTEGER NOT NULL DEFAULT 1,
                 admin INTEGER NOT NULL DEFAULT 0
             )
         """

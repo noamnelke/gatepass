@@ -25,7 +25,7 @@
                 body: JSON.stringify(registrationRequest)
             });
             if (res.ok) {
-                window.location.href = '/reg_success/' + (await res.json())['user_id'];
+                window.location.href = '/';
             } else {
                 alert('Registration failed.');
             }

@@ -2,6 +2,8 @@ import datetime
 import hashlib
 import base64
 
+SEP = "."
+
 
 def get_hour(t=None):
     # Returns the current hour if t is None, otherwise the hour of t
@@ -15,14 +17,15 @@ def generate_token(gate_id, valid_through_hour, secret, max_length=5):
     return base64.urlsafe_b64encode(h)[:max_length].decode()
 
 
-def encode_full_token(gate_id, valid_through_hour, token):
+def encode_full_token(gate_id, valid_through_hour, secret_key):
     # Returns a full token string for the given gate_id, valid_through_hour, and token
-    return f"{gate_id}:{int_to_base64(valid_through_hour)}:{token}"
+    token = generate_token(gate_id, valid_through_hour, secret_key)
+    return f"{gate_id}{SEP}{int_to_base64(valid_through_hour)}{SEP}{token}"
 
 
 def decode_full_token(full_token):
     # Returns the gate_id, valid_through_hour, and token from a full token string
-    gate_id, valid_through_hour, token = full_token.split(":")
+    gate_id, valid_through_hour, token = full_token.split(SEP)
     return int(gate_id), base64_to_int(valid_through_hour), token
 
 
