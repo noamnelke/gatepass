@@ -26,12 +26,19 @@ form label {
     margin-bottom: 5px;
 }
 
-form input[type="text"] {
+form input[type="text"],
+form input[type="number"],
+form input[type="datetime-local"] {
     box-sizing: border-box;
     width: 50%;
     padding: 10px;
     margin-bottom: 10px;
     text-align: center;
+}
+
+form input.validated {
+    border: 2px solid #28a745;
+    background-color: #e2ffe0;
 }
 
 form button {
@@ -92,8 +99,11 @@ button.main-button {
 
 button.main-button:disabled {
     background-color: #aaa;
-    animation: gray-pulse 1s infinite;
     cursor: not-allowed;
+}
+
+button.main-button:disabled:not(.static) {
+    animation: gray-pulse 1s infinite;
 }
 
 button.main-button.opening:disabled {

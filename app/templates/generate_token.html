@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Registration Token{% endblock %}
+{% block heading %}Generate Registration Token{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <script>
+        async function GenerateToken() {
+            const btn = document.querySelector('#generate-button');
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+
+            const req = Object.fromEntries(new FormData(document.getElementById('generateTokenForm')));
+
+            const res = await fetch('/generate-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(req)
+            });
+
+            if (res.ok) {
+                document.querySelector('#token').value = await res.text();
+                OnTokenChange();
+                setTimeout(() => ValidateToken(true), 500);
+            } else {
+                alert('Token generation failed: ' + await res.text());
+            }
+            btn.disabled = false;
+            btn.textContent = 'Generate';
+        }
+
+        async function ValidateToken(silent = false) {
+            const btn = document.querySelector('#validate-button');
+            btn.disabled = true;
+            btn.textContent = 'Validating...';
+            btn.classList.remove('static');
+
+            const req = Object.fromEntries(new FormData(document.getElementById('validateTokenForm')));
+
+            const res = await fetch('/validate-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(req)
+            });
+
+            if (res.ok) {
+                const res_json = await res.json();
+                if (res_json['valid']) {
+                    OnTokenChange(true);
+                    if (!silent) {
+                        setTimeout(() => alert('Token is valid.'), 500);
+                    }
+                } else {
+                    OnTokenChange();
+                    alert('Validation failed: ' + res_json['reason']);
+                }
+            } else {
+                alert('Token validation failed.');
+            }
+            btn.disabled = false;
+            btn.textContent = 'Validate';
+            btn.classList.add('static');
+        }
+
+        function OnTokenChange(validated = false) {
+            const token = document.querySelector('#token').value;
+            
+            document.querySelector('#validate-button').disabled = token === '';
+
+            const url = token === '' ? '' : window.location.origin + '/register?token=' + token;
+            a = document.querySelector('#registration-link');
+            a.textContent = url;
+            a.href = url;
+
+            if (validated) {
+                document.querySelector('#token').classList.add('validated');
+            } else {
+                document.querySelector('#token').classList.remove('validated');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tokenInput = document.querySelector('#token');
+            tokenInput.addEventListener('input', () => OnTokenChange());
+            tokenInput.addEventListener('focus', () => tokenInput.select());
+
+            const validThroughInput = document.querySelector('#valid-through');
+            const currentDate = new Date();
+            currentDate.setDate(currentDate.getDate() + 7); // Add a week to the current date
+            validThroughInput.value = currentDate.toISOString().slice(0, 14) + '00';
+
+            validThroughInput.addEventListener('input', () => {
+                validThroughInput.value = validThroughInput.value.slice(0, 14) + '00';
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+        <form id="generateTokenForm">
+            <div>
+                <label for="gate-id">Gate ID</label>
+                <input type="number" id="gate-id" name="gate-id" value="1">
+            </div>
+            <div>
+                <label for="valid-through">Valid through</label>
+                <input type="datetime-local" id="valid-through" name="valid-through" min="2024-01-01T00:00" step="3600">
+            </div>
+            <div>
+                <button class="main-button" id="generate-button" type="button" onclick="GenerateToken()">Generate</button>
+            </div>
+        </form>
+        <form id="validateTokenForm">
+            <div>
+                <label for="token">Token</label>
+                <input type="text" id="token" name="token" placeholder="Your token will appear here">
+                <p><a id="registration-link"></a></p>
+            </div>
+            <div>
+                <button class="main-button static" id="validate-button" type="button" onclick="ValidateToken()" disabled>Validate</button>
+            </div>
+        </form>
+{% endblock %}

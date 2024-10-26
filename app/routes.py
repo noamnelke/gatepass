@@ -1,3 +1,4 @@
+import datetime
 from flask import (
     Blueprint,
     render_template,
@@ -16,6 +17,8 @@ from webauthn import (
     verify_registration_response,
 )
 import logging
+
+from . import reg_tokens
 from . import models as db
 from config import Config
 
@@ -68,6 +71,14 @@ def update(user_id):
     user = db.get_user(user_id)
     return render_template("update.html", user=user)
 
+
+@bp.route("/generate-token")
+def generate_token_page():
+    if "is_admin" not in session:
+        return login()
+
+    logging.info("Accessed /generate-token page.")
+    return render_template("generate_token.html")
 
 # API endpoints
 
@@ -180,6 +191,43 @@ def update_user():
         return "Failed", 400
 
 
+@bp.route("/generate-token", methods=["POST"])
+def generate_token_endpoint():
+    logging.info("Generating token.")
+    if "is_admin" not in session:
+        logging.error("User is not an admin.")
+        return "Failed", 400
+
+    try:
+        req = request.get_json()
+        gate_id = int(req["gate-id"])
+        valid_through_str = req["valid-through"]
+        valid_through_dt = datetime.datetime.strptime(valid_through_str, "%Y-%m-%dT%H:%M")
+        valid_through_hour = reg_tokens.get_hour(valid_through_dt)
+        token = generate_token(gate_id, valid_through_hour)
+        full_token = reg_tokens.encode_full_token(gate_id, valid_through_hour, token)
+        logging.info(f"Token generated. token={full_token} valid_through={valid_through_dt}")
+        return full_token, 200
+    except Exception as e:
+        logging.error(f"Token generation failed: {e}")
+        return "Server error", 400
+
+
+@bp.route("/validate-token", methods=["POST"])
+def validate_token_endpoint():
+    logging.info("Validating token.")
+    try:
+        full_token = request.get_json()['token']
+        reg_tokens.validate_token(full_token, Config.SECRET_KEY)
+        return {"valid": True}, 200
+    except ValueError as e:
+        logging.error(f"Token validation failed: {e}")
+        return {"valid": False, "reason": str(e)}, 200
+    except Exception as e:
+        logging.error(f"Token validation failed: {e}")
+        return "Failed", 400
+
+
 # Helper functions
 
 def generate_auth_options():
@@ -193,3 +241,7 @@ def login():
     options = generate_auth_options()
     id = session.get("user_id")
     return render_template("login.html", options=options_to_json(options), id=id)
+
+
+def generate_token(gate_id, valid_through_hour):
+    return reg_tokens.generate_token(gate_id, valid_through_hour, Config.SECRET_KEY)
