@@ -3,6 +3,9 @@ body {
     font-size: 16px;
     text-align: center;
     margin-top: 50px;
+    background: url('/static/images/pexels-xiaotianwang-12694097.jpg') no-repeat top center fixed;
+    background-size: cover;
+    background-blend-mode: overlay;
 }
 .container {
     max-width: 600px;
@@ -10,7 +13,8 @@ body {
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 p.warning {
@@ -150,6 +154,7 @@ img.logo {
     body {
         margin-top: 20px;
         padding: 10px;
+        background-color: rgba(255, 255, 255, 0.8);
     }
 
     .container {
@@ -159,6 +164,7 @@ img.logo {
         border: none;
         border-radius: 5px;
         box-shadow: none;
+        background-color: transparent;
     }
 
     form input[type="text"], form input[type="radio"] {
