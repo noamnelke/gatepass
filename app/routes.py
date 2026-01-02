@@ -96,6 +96,8 @@ def open():
         logging.error("CSRF validation failed.")
         return "Failed", 403
     if "validated" not in session:
+        if "user_id" in session:
+            return {"error": "not_validated"}, 403
         ret = {
             "error": "not_authenticated",
             "options": options_to_json(generate_auth_options()),
@@ -113,7 +115,7 @@ def verify_login():
         stored_challenge = session.pop("current_authentication_challenge", None)
         if not stored_challenge:
             logging.error("No stored challenge found in session.")
-            return "Failed", 400
+            return {"error": "missing_challenge"}, 400
 
         user = db.get_user_by_credential_id(base64url_to_bytes(credential["rawId"]))
 
@@ -139,10 +141,12 @@ def verify_login():
             session.pop("is_admin", None)
 
         logging.info(f"User authenticated successfully. user={user}")
-        return "OK", 200
+        if not user["validated"]:
+            return {"error": "not_validated"}, 403
+        return {"status": "ok"}, 200
     except Exception as e:
         logging.error(f"Authentication failed: {e}")
-        return "Failed", 400
+        return {"error": "authentication_failed"}, 401
 
 
 @bp.route("/verify-registration", methods=["POST"])

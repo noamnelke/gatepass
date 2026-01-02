@@ -13,6 +13,12 @@
     <script type="text/javascript">
         const { startAuthentication } = SimpleWebAuthnBrowser;
 
+        function showStatus(message) {
+            const el = document.getElementById('status-message');
+            el.textContent = message;
+            el.style.display = 'block';
+        }
+
         async function login(optionsJSON) {
             const assertion = await startAuthentication({ optionsJSON });
             const res = await fetch('/verify-login', {
@@ -23,8 +29,13 @@
             if (res.ok) {
                 open();
             } else {
-                alert('Authentication failed. Please register first.');
-                window.location.href = '/register';
+                const data = await res.json().catch(() => ({}));
+                if (data.error === 'not_validated') {
+                    showStatus('המשתמש אינו מאומת. פנה למנהל המערכת.');
+                } else {
+                    alert('Authentication failed. Please register first.');
+                    window.location.href = '/register';
+                }
             }
         }
 
@@ -46,6 +57,8 @@
                 if (responseData.error === 'not_authenticated') {
                     const { options } = responseData;
                     login(JSON.parse(options));
+                } else if (responseData.error === 'not_validated') {
+                    showStatus('המשתמש אינו מאומת. פנה למנהל המערכת.');
                 } else {
                     {# TODO: Handle unverified / unauthorized user #}
                     console.error(responseData);
@@ -87,6 +100,7 @@
 {% endblock %}
 
 {% block content %}
+        <p class="warning" id="status-message" style="display:none;"></p>
         <div>
             <button class="main-button">פתח שער</button>
         </div>

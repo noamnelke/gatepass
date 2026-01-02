@@ -10,24 +10,48 @@
     <script type="text/javascript">
         const { startAuthentication } = SimpleWebAuthnBrowser;
 
+        function showStatus(message) {
+            const el = document.getElementById('login-error');
+            el.textContent = message;
+            el.style.display = 'block';
+        }
+
         async function login() {
-            btn = document.querySelector('button');
+            const btn = document.querySelector('button');
             btn.disabled = true;
             btn.innerText = 'Authenticating...';
-            
-            const options = {{ options | safe }};
-            const assertion = await startAuthentication({ optionsJSON: options });
-            await fetch('/verify-login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(assertion)
-            });
-            location.reload();
+
+            try {
+                const options = {{ options | safe }};
+                const assertion = await startAuthentication({ optionsJSON: options });
+                const res = await fetch('/verify-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(assertion)
+                });
+                if (res.ok) {
+                    location.reload();
+                    return;
+                }
+                const data = await res.json().catch(() => ({}));
+                if (data.error === 'not_validated') {
+                    showStatus('User is not validated. Contact an administrator.');
+                } else {
+                    showStatus('Authentication failed. Please try again.');
+                }
+            } catch (err) {
+                console.error(err);
+                showStatus('Authentication failed. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Login';
+            }
         }
     </script>
 {% endblock %}
 
 {% block content %}
+        <p class="warning" id="login-error" style="display:none;"></p>
         {% if id %}
         <p class="warning">
             User {{ id }} is not an administrator.
