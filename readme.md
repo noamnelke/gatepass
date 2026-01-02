@@ -66,9 +66,22 @@ Browsers block passkeys for websites that don't use SSL. To work around this for
 
 ## Usage
 
-To start the application, run:
+To start the application with local SSL (required for passkeys), run:
 ```sh
-flask run
+python run.py
+```
+
+## Registration Flow
+
+Admins generate a registration token at `/generate-token` and share the full link with users. Anyone with a valid token can register and immediately receive a validated account. Tokens are time-bounded and intended to be shared as URLs, not typed manually.
+
+## Sample Environment
+
+Example `.env` values (not committed):
+```
+SECRET_KEY=change-me
+RP_ID=gatepass.local
+ORIGIN=https://gatepass.local:5000
 ```
 
 ## Contributing

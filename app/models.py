@@ -102,5 +102,3 @@ def init_db():
         conn.close()
         logging.info("Initialized database.")
 
-
-init_db()

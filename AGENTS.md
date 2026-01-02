@@ -8,8 +8,7 @@
 ## Build, Test, and Development Commands
 - `python -m venv venv` and `source venv/bin/activate` to set up a virtualenv.
 - `pip install -r requirements.txt` to install dependencies.
-- `flask run` to start the app (uses Flask defaults; see SSL setup below).
-- `python run.py` to run with SSL using `cert.pem` and `key.pem`.
+- `python run.py` to run with SSL using `cert.pem` and `key.pem` (required for passkeys).
 - `openssl req -x509 -nodes -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -config openssl.cnf` to create local SSL certs for passkey testing.
 
 ## Coding Style & Naming Conventions
@@ -19,6 +18,10 @@
 
 ## Testing Guidelines
 - No automated tests are currently present. If you add tests, place them under a `tests/` directory and document the command in this file.
+
+## Registration & Validation Policy
+- Admins generate registration tokens and share full URLs; tokens are intended to be clicked, not typed.
+- Anyone with a valid token can register and receive a validated account immediately.
 
 ## Commit & Pull Request Guidelines
 - Recent commits use short, imperative, lowercase messages (e.g., “add background image”). Follow that style unless agreed otherwise.
