@@ -3,6 +3,7 @@ import hashlib
 import base64
 
 SEP = "."
+TOKEN_LENGTH = 16
 
 
 def get_hour(t=None):
@@ -11,7 +12,7 @@ def get_hour(t=None):
     return int(t.timestamp() / 3600)
 
 
-def generate_token(gate_id, valid_through_hour, secret, max_length=5):
+def generate_token(gate_id, valid_through_hour, secret, max_length=TOKEN_LENGTH):
     # Returns a token for the given gate_id and valid_through_hour
     h = hashlib.sha256(f"{gate_id}:{valid_through_hour}:{secret}".encode()).digest()
     return base64.urlsafe_b64encode(h)[:max_length].decode()
