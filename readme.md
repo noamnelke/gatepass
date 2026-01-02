@@ -81,6 +81,10 @@ The first registered user is automatically marked as an admin. To access admin t
 - Visit `/generate-token` to create registration links.
 - Visit `/update/<user_id>` to edit a user (validation/admin flags, metadata).
 
+## CSRF Requirements
+
+POST requests to `/open`, `/generate-token`, and `/update-user` must include the `X-CSRF-Token` header set to the server-provided token.
+
 ## Sample Environment
 
 Example `.env` values (not committed). `SECRET_KEY` is required:

@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 - `app/` contains the Flask application package, including routes (`app/routes.py`), database helpers (`app/models.py`), token utilities (`app/reg_tokens.py`), templates (`app/templates/`), and static assets (`app/static/`).
 - Top-level entry point is `run.py` (app factory + SSL) for local dev.
-- Configuration lives in `config.py`; local state uses `passkeys.db` (SQLite).
+- Configuration lives in `config.py`; local state uses `passkeys.db` (SQLite, WAL enabled).
 
 ## Build, Test, and Development Commands
 - `python -m venv venv` and `source venv/bin/activate` to set up a virtualenv.
@@ -22,6 +22,10 @@
 ## Registration & Validation Policy
 - Admins generate registration tokens and share full URLs; tokens are intended to be clicked, not typed.
 - Anyone with a valid token can register and receive a validated account immediately.
+
+## Security Notes
+- CSRF is enforced on `/open`, `/generate-token`, and `/update-user` via the `X-CSRF-Token` header.
+- Admin-only pages require an authenticated admin session; use `/generate-token` for registration links and `/update/<user_id>` for user updates.
 
 ## Commit & Pull Request Guidelines
 - Recent commits use short, imperative, lowercase messages (e.g., “add background image”). Follow that style unless agreed otherwise.
