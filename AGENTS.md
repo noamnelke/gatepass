@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 - `app/` contains the Flask application package, including routes (`app/routes.py`), database helpers (`app/models.py`), token utilities (`app/reg_tokens.py`), templates (`app/templates/`), and static assets (`app/static/`).
-- Top-level entry points are `run.py` (app factory + SSL) and `app.py` (standalone Flask app). Prefer `run.py` for local dev.
+- Top-level entry point is `run.py` (app factory + SSL) for local dev.
 - Configuration lives in `config.py`; local state uses `passkeys.db` (SQLite).
 
 ## Build, Test, and Development Commands
