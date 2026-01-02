@@ -24,6 +24,11 @@ from config import Config
 bp = Blueprint("main", __name__)
 
 
+def require_csrf():
+    token = request.headers.get("X-CSRF-Token")
+    return token and token == session.get("csrf_token")
+
+
 # Pages
 
 @bp.route("/")
@@ -87,6 +92,9 @@ def generate_token_page():
 @bp.route("/open", methods=["POST"])
 def open():
     logging.info("Accessed /open page.")
+    if not require_csrf():
+        logging.error("CSRF validation failed.")
+        return "Failed", 403
     if "validated" not in session:
         ret = {
             "error": "not_authenticated",
@@ -181,6 +189,9 @@ def update_user():
     if "is_admin" not in session:
         logging.error("User is not an admin.")
         return "Failed", 400
+    if not require_csrf():
+        logging.error("CSRF validation failed.")
+        return "Failed", 403
 
     try:
         user = request.get_json()
@@ -198,6 +209,9 @@ def generate_token_endpoint():
     if "is_admin" not in session:
         logging.error("User is not an admin.")
         return "Failed", 400
+    if not require_csrf():
+        logging.error("CSRF validation failed.")
+        return "Failed", 403
 
     try:
         req = request.get_json()

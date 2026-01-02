@@ -75,9 +75,15 @@ python run.py
 
 Admins generate a registration token at `/generate-token` and share the full link with users. Anyone with a valid token can register and immediately receive a validated account. Tokens are time-bounded and intended to be shared as URLs, not typed manually.
 
+## Admin Interface
+
+The first registered user is automatically marked as an admin. To access admin tools:
+- Visit `/generate-token` to create registration links.
+- Visit `/update/<user_id>` to edit a user (validation/admin flags, metadata).
+
 ## Sample Environment
 
-Example `.env` values (not committed):
+Example `.env` values (not committed). `SECRET_KEY` is required:
 ```
 SECRET_KEY=change-me
 RP_ID=gatepass.local

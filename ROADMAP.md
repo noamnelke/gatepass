@@ -1,21 +1,5 @@
 # Roadmap
 
-## Security & Access Control
-- **Harden session handling**
-  - Issue: Default `SECRET_KEY` fallback and no explicit cookie hardening.
-  - Fix: Require `SECRET_KEY` in env; set `SESSION_COOKIE_SECURE`, `SESSION_COOKIE_HTTPONLY`, and `SESSION_COOKIE_SAMESITE`.
-  - Tradeoff: Slightly more setup friction in dev; cookies won’t work over plain HTTP.
-
-- **Define explicit validation policy**
-  - Issue: New users default to `validated=1` and first user becomes admin.
-  - Fix: Make validation explicit and configurable (`validated` default 0) and require an admin toggle.
-  - Tradeoff: Adds an approval step for new users; aligns with building gate expectations only if you want manual review.
-
-- **Add CSRF protection for admin endpoints**
-  - Issue: `/generate-token` and `/update-user` accept POSTs without CSRF.
-  - Fix: Add CSRF tokens or use Flask-WTF for admin forms.
-  - Tradeoff: Adds form plumbing; minimal runtime overhead.
-
 ## Registration Token Design
 - **Move to longer, URL-friendly tokens**
   - Issue: Current token is only 5 chars and easily brute‑forced.

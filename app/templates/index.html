@@ -32,7 +32,10 @@
             buttonValidating();
             const res = await fetch('/open', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '{{ csrf_token }}'
+                },
                 body: JSON.stringify({ gate_id: 1 })
             });
             if (res.ok) {
